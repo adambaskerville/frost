@@ -1,0 +1,187 @@
+{
+ "1": {
+  "eps": "-0.0462224456276869354260285065610593310429369089854069696",
+  "log": [
+   "R=  10.188 digits= 11.8 order=  21 steps= 19 shots= 80 eps=-0.040969457801554      0.1s",
+   "R=  12.234 digits= 13.0 order=  22 steps= 17 shots= 45 eps=-0.044334362981424      0.2s",
+   "R=  14.688 digits= 13.8 order=  23 steps= 19 shots= 42 eps=-0.045673784488283      0.3s",
+   "R=  17.625 digits= 14.6 order=  24 steps= 20 shots= 35 eps=-0.046101634790047      0.4s",
+   "R=  21.156 digits= 15.6 order=  25 steps= 22 shots= 37 eps=-0.046203866989719      0.5s",
+   "R=  25.391 digits= 16.7 order=  27 steps= 23 shots= 33 eps=-0.046220598012420      0.6s",
+   "R=  30.469 digits= 18.0 order=  28 steps= 25 shots= 26 eps=-0.046222336852673      0.7s",
+   "R=  36.562 digits= 19.7 order=  30 steps= 26 shots= 26 eps=-0.046222442210221      0.8s",
+   "R=  43.875 digits= 21.6 order=  33 steps= 28 shots= 21 eps=-0.046222445576976      0.9s",
+   "R=  52.656 digits= 23.9 order=  36 steps= 29 shots= 20 eps=-0.046222445627381      1.1s",
+   "R=  63.188 digits= 26.7 order=  39 steps= 31 shots= 20 eps=-0.046222445627686      1.2s",
+   "R=  75.828 digits= 30.0 order=  43 steps= 32 shots= 19 eps=-0.046222445627687      1.4s",
+   "R=  91.000 digits= 34.0 order=  48 steps= 34 shots= 14 eps=-0.046222445627687      1.6s",
+   "R= 109.203 digits= 38.8 order=  54 steps= 35 shots= 14 eps=-0.046222445627687      1.9s",
+   "R= 131.047 digits= 44.6 order=  61 steps= 37 shots= 16 eps=-0.046222445627687      2.2s",
+   "R= 157.266 digits= 50.0 order=  67 steps= 38 shots= 16 eps=-0.046222445627687      2.6s",
+   "R= 181.766 digits= 50.0 order=  67 steps= 41 shots= 16 eps=-0.046222445627687      3.1s"
+  ]
+ },
+ "2": {
+  "eps": "-0.9179555628563395101472163310287576940300680694735396674",
+  "log": [
+   "R=   4.156 digits= 14.8 order=  25 steps= 14 shots= 58 eps=-0.914041036575058      0.1s",
+   "R=   5.000 digits= 15.9 order=  26 steps= 15 shots= 38 eps=-0.917284001914612      0.2s",
+   "R=   6.000 digits= 17.1 order=  27 steps= 17 shots= 31 eps=-0.917880606745552      0.2s",
+   "R=   7.203 digits= 18.5 order=  29 steps= 18 shots= 27 eps=-0.917950767210503      0.3s",
+   "R=   8.656 digits= 20.2 order=  31 steps= 19 shots= 26 eps=-0.917955407891121      0.4s",
+   "R=  10.391 digits= 22.2 order=  34 steps= 21 shots= 25 eps=-0.917955560543999      0.5s",
+   "R=  12.469 digits= 24.7 order=  37 steps= 22 shots= 20 eps=-0.917955562842842      0.6s",
+   "R=  14.969 digits= 27.6 order=  40 steps= 24 shots= 20 eps=-0.917955562856315      0.8s",
+   "R=  17.969 digits= 31.1 order=  44 steps= 25 shots= 20 eps=-0.917955562856340      0.9s",
+   "R=  21.562 digits= 35.4 order=  50 steps= 27 shots= 19 eps=-0.917955562856340      1.1s",
+   "R=  25.875 digits= 40.5 order=  56 steps= 28 shots= 15 eps=-0.917955562856340      1.4s",
+   "R=  31.062 digits= 46.6 order=  63 steps= 30 shots= 16 eps=-0.917955562856340      1.7s",
+   "R=  37.281 digits= 50.0 order=  67 steps= 32 shots= 16 eps=-0.917955562856340      2.0s",
+   "R=  40.797 digits= 50.0 order=  67 steps= 34 shots= 16 eps=-0.917955562856340      2.4s"
+  ]
+ },
+ "3": {
+  "eps": "-2.7923644022458080852190258979108240207059756539514454713",
+  "log": [
+   "R=   2.609 digits= 15.3 order=  25 steps= 13 shots= 53 eps=-2.787321657893651      0.1s",
+   "R=   3.141 digits= 16.4 order=  27 steps= 14 shots= 33 eps=-2.791661070326978      0.1s",
+   "R=   3.781 digits= 17.8 order=  28 steps= 16 shots= 32 eps=-2.792305844594373      0.2s",
+   "R=   4.547 digits= 19.3 order=  30 steps= 17 shots= 27 eps=-2.792361723981760      0.3s",
+   "R=   5.469 digits= 21.2 order=  32 steps= 19 shots= 26 eps=-2.792364343957825      0.4s",
+   "R=   6.562 digits= 23.5 order=  35 steps= 20 shots= 23 eps=-2.792364401688820      0.5s",
+   "R=   7.875 digits= 26.2 order=  38 steps= 22 shots= 20 eps=-2.792364402243922      0.6s",
+   "R=   9.453 digits= 29.4 order=  42 steps= 23 shots= 20 eps=-2.792364402245806      0.8s",
+   "R=  11.344 digits= 33.3 order=  47 steps= 25 shots= 20 eps=-2.792364402245808      0.9s",
+   "R=  13.625 digits= 38.0 order=  53 steps= 26 shots= 19 eps=-2.792364402245808      1.2s",
+   "R=  16.359 digits= 43.6 order=  59 steps= 28 shots= 16 eps=-2.792364402245808      1.4s",
+   "R=  19.641 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-2.792364402245808      1.8s",
+   "R=  23.391 digits= 50.0 order=  67 steps= 32 shots= 16 eps=-2.792364402245808      2.1s"
+  ]
+ },
+ "4": {
+  "eps": "-5.6671155889287760049543104091675792365542540451099441561",
+  "log": [
+   "R=   1.906 digits= 15.6 order=  25 steps= 13 shots= 44 eps=-5.660621270600370      0.1s",
+   "R=   2.297 digits= 16.7 order=  27 steps= 14 shots= 33 eps=-5.666312196402076      0.1s",
+   "R=   2.766 digits= 18.1 order=  29 steps= 15 shots= 32 eps=-5.667056896424323      0.2s",
+   "R=   3.328 digits= 19.7 order=  31 steps= 17 shots= 26 eps=-5.667113316455453      0.3s",
+   "R=   4.000 digits= 21.7 order=  33 steps= 18 shots= 26 eps=-5.667115547044122      0.4s",
+   "R=   4.812 digits= 24.1 order=  36 steps= 20 shots= 20 eps=-5.667115588628961      0.5s",
+   "R=   5.781 digits= 26.9 order=  39 steps= 21 shots= 20 eps=-5.667115588928031      0.6s",
+   "R=   6.938 digits= 30.3 order=  43 steps= 23 shots= 20 eps=-5.667115588928776      0.7s",
+   "R=   8.328 digits= 34.4 order=  48 steps= 24 shots= 20 eps=-5.667115588928776      0.9s",
+   "R=  10.000 digits= 39.2 order=  54 steps= 26 shots= 14 eps=-5.667115588928776      1.1s",
+   "R=  12.000 digits= 45.1 order=  61 steps= 27 shots= 16 eps=-5.667115588928776      1.4s",
+   "R=  14.406 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-5.667115588928776      1.7s",
+   "R=  16.422 digits= 50.0 order=  67 steps= 31 shots= 16 eps=-5.667115588928776      2.0s"
+  ]
+ },
+ "5": {
+  "eps": "-9.5419784830027329026485062086803952709994297968985752161",
+  "log": [
+   "R=   1.500 digits= 15.7 order=  26 steps= 12 shots= 42 eps=-9.533620546847311      0.1s",
+   "R=   1.812 digits= 16.9 order=  27 steps= 14 shots= 33 eps=-9.541042673992921      0.1s",
+   "R=   2.188 digits= 18.3 order=  29 steps= 15 shots= 32 eps=-9.541917841906619      0.2s",
+   "R=   2.625 digits= 20.0 order=  31 steps= 16 shots= 26 eps=-9.541976244191803      0.3s",
+   "R=   3.156 digits= 22.0 order=  33 steps= 18 shots= 26 eps=-9.541978446366574      0.4s",
+   "R=   3.797 digits= 24.4 order=  36 steps= 19 shots= 20 eps=-9.541978482771887      0.5s",
+   "R=   4.562 digits= 27.3 order=  40 steps= 21 shots= 20 eps=-9.541978483002246      0.6s",
+   "R=   5.484 digits= 30.8 order=  44 steps= 22 shots= 20 eps=-9.541978483002733      0.7s",
+   "R=   6.594 digits= 35.0 order=  49 steps= 24 shots= 20 eps=-9.541978483002733      0.9s",
+   "R=   7.922 digits= 40.1 order=  55 steps= 25 shots= 15 eps=-9.541978483002733      1.1s",
+   "R=   9.516 digits= 46.1 order=  63 steps= 27 shots= 16 eps=-9.541978483002733      1.4s",
+   "R=  11.422 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-9.541978483002733      1.7s",
+   "R=  12.656 digits= 50.0 order=  67 steps= 31 shots= 16 eps=-9.541978483002733      2.1s"
+  ]
+ },
+ "6": {
+  "eps": "-14.4168916445672552500661436967579496603877832390510524092",
+  "log": [
+   "R=   1.234 digits= 15.8 order=  26 steps= 12 shots= 41 eps=-14.406194571117236      0.1s",
+   "R=   1.484 digits= 16.9 order=  27 steps= 14 shots= 33 eps=-14.415665374736271      0.1s",
+   "R=   1.781 digits= 18.3 order=  29 steps= 15 shots= 32 eps=-14.416806886644313      0.2s",
+   "R=   2.141 digits= 20.0 order=  31 steps= 16 shots= 26 eps=-14.416888634036971      0.3s",
+   "R=   2.578 digits= 22.0 order=  33 steps= 18 shots= 26 eps=-14.416891598013953      0.4s",
+   "R=   3.094 digits= 24.4 order=  36 steps= 19 shots= 20 eps=-14.416891644259014      0.5s",
+   "R=   3.719 digits= 27.3 order=  40 steps= 20 shots= 20 eps=-14.416891644566620      0.6s",
+   "R=   4.469 digits= 30.8 order=  44 steps= 22 shots= 20 eps=-14.416891644567254      0.7s",
+   "R=   5.375 digits= 35.1 order=  49 steps= 24 shots= 20 eps=-14.416891644567256      0.9s",
+   "R=   6.453 digits= 40.1 order=  55 steps= 25 shots= 15 eps=-14.416891644567256      1.1s",
+   "R=   7.750 digits= 46.1 order=  63 steps= 27 shots= 16 eps=-14.416891644567256      1.4s",
+   "R=   9.312 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-14.416891644567256      1.7s",
+   "R=  10.297 digits= 50.0 order=  67 steps= 30 shots= 16 eps=-14.416891644567256      2.1s"
+  ]
+ },
+ "7": {
+  "eps": "-20.2918317112251915180805346407133967454538213985790788323",
+  "log": [
+   "R=   1.047 digits= 15.8 order=  26 steps= 12 shots= 46 eps=-20.278252720207533      0.1s",
+   "R=   1.266 digits= 17.0 order=  27 steps= 13 shots= 33 eps=-20.290416291131578      0.1s",
+   "R=   1.531 digits= 18.5 order=  29 steps= 15 shots= 32 eps=-20.291750001685614      0.2s",
+   "R=   1.844 digits= 20.2 order=  31 steps= 16 shots= 26 eps=-20.291829143846087      0.3s",
+   "R=   2.219 digits= 22.3 order=  34 steps= 17 shots= 26 eps=-20.291831674818059      0.4s",
+   "R=   2.672 digits= 24.8 order=  37 steps= 19 shots= 20 eps=-20.291831711033570      0.5s",
+   "R=   3.219 digits= 27.8 order=  40 steps= 20 shots= 20 eps=-20.291831711224884      0.6s",
+   "R=   3.875 digits= 31.4 order=  45 steps= 22 shots= 20 eps=-20.291831711225193      0.7s",
+   "R=   4.656 digits= 35.8 order=  50 steps= 24 shots= 20 eps=-20.291831711225193      0.9s",
+   "R=   5.594 digits= 41.0 order=  56 steps= 25 shots= 16 eps=-20.291831711225193      1.2s",
+   "R=   6.719 digits= 47.2 order=  64 steps= 27 shots= 16 eps=-20.291831711225193      1.4s",
+   "R=   8.062 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-20.291831711225193      1.8s",
+   "R=   8.688 digits= 50.0 order=  67 steps= 30 shots= 16 eps=-20.291831711225193      2.1s"
+  ]
+ },
+ "8": {
+  "eps": "-27.1667878561290013287933515029583561522526232459960987063",
+  "log": [
+   "R=   0.922 digits= 15.9 order=  26 steps= 12 shots= 46 eps=-27.152386806450011      0.1s",
+   "R=   1.109 digits= 17.1 order=  27 steps= 13 shots= 33 eps=-27.165281425256815      0.1s",
+   "R=   1.344 digits= 18.6 order=  29 steps= 15 shots= 31 eps=-27.166707125735179      0.2s",
+   "R=   1.625 digits= 20.4 order=  31 steps= 16 shots= 26 eps=-27.166785691112988      0.3s",
+   "R=   1.953 digits= 22.5 order=  34 steps= 17 shots= 26 eps=-27.166787827436078      0.4s",
+   "R=   2.344 digits= 25.0 order=  37 steps= 19 shots= 20 eps=-27.166787855977880      0.5s",
+   "R=   2.812 digits= 28.0 order=  41 steps= 20 shots= 20 eps=-27.166787856128749      0.6s",
+   "R=   3.375 digits= 31.6 order=  45 steps= 22 shots= 20 eps=-27.166787856129002      0.7s",
+   "R=   4.062 digits= 36.0 order=  50 steps= 23 shots= 20 eps=-27.166787856129002      0.9s",
+   "R=   4.875 digits= 41.2 order=  57 steps= 25 shots= 16 eps=-27.166787856129002      1.1s",
+   "R=   5.859 digits= 47.5 order=  64 steps= 26 shots= 16 eps=-27.166787856129002      1.4s",
+   "R=   7.031 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-27.166787856129002      1.7s",
+   "R=   7.500 digits= 50.0 order=  67 steps= 30 shots= 16 eps=-27.166787856129002      2.1s"
+  ]
+ },
+ "9": {
+  "eps": "-35.0417543745265386678785583209423022729446774350699706780",
+  "log": [
+   "R=   0.812 digits= 15.9 order=  26 steps= 12 shots= 49 eps=-35.023864590527715      0.1s",
+   "R=   0.984 digits= 17.2 order=  27 steps= 13 shots= 33 eps=-35.040063840302345      0.1s",
+   "R=   1.188 digits= 18.6 order=  29 steps= 15 shots= 31 eps=-35.041660373537731      0.2s",
+   "R=   1.438 digits= 20.5 order=  31 steps= 16 shots= 26 eps=-35.041751958450632      0.3s",
+   "R=   1.734 digits= 22.6 order=  34 steps= 17 shots= 26 eps=-35.041754346342216      0.4s",
+   "R=   2.094 digits= 25.2 order=  37 steps= 19 shots= 20 eps=-35.041754374410438      0.5s",
+   "R=   2.516 digits= 28.3 order=  41 steps= 20 shots= 20 eps=-35.041754374526370      0.6s",
+   "R=   3.031 digits= 32.0 order=  45 steps= 22 shots= 20 eps=-35.041754374526541      0.8s",
+   "R=   3.641 digits= 36.5 order=  51 steps= 23 shots= 20 eps=-35.041754374526541      1.0s",
+   "R=   4.375 digits= 41.8 order=  57 steps= 25 shots= 16 eps=-35.041754374526541      1.2s",
+   "R=   5.250 digits= 48.2 order=  65 steps= 26 shots= 16 eps=-35.041754374526541      1.4s",
+   "R=   6.312 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-35.041754374526541      1.8s",
+   "R=   6.609 digits= 50.0 order=  67 steps= 30 shots= 16 eps=-35.041754374526541      2.1s"
+  ]
+ },
+ "10": {
+  "eps": "-43.9167279750639633175966513711804070280105291384320467704",
+  "log": [
+   "R=   0.734 digits= 16.0 order=  26 steps= 12 shots= 39 eps=-43.897482565487152      0.1s",
+   "R=   0.891 digits= 17.2 order=  28 steps= 13 shots= 33 eps=-43.915004701775878      0.1s",
+   "R=   1.078 digits= 18.8 order=  29 steps= 15 shots= 30 eps=-43.916642102175629      0.2s",
+   "R=   1.297 digits= 20.6 order=  32 steps= 16 shots= 26 eps=-43.916725623863634      0.3s",
+   "R=   1.562 digits= 22.7 order=  34 steps= 17 shots= 26 eps=-43.916727948091648      0.4s",
+   "R=   1.875 digits= 25.3 order=  37 steps= 19 shots= 20 eps=-43.916727974936300      0.5s",
+   "R=   2.250 digits= 28.3 order=  41 steps= 20 shots= 20 eps=-43.916727975063772      0.6s",
+   "R=   2.703 digits= 32.0 order=  45 steps= 22 shots= 20 eps=-43.916727975063964      0.7s",
+   "R=   3.250 digits= 36.5 order=  51 steps= 23 shots= 20 eps=-43.916727975063964      0.9s",
+   "R=   3.906 digits= 41.8 order=  57 steps= 25 shots= 16 eps=-43.916727975063964      1.2s",
+   "R=   4.688 digits= 48.2 order=  65 steps= 26 shots= 16 eps=-43.916727975063964      1.4s",
+   "R=   5.625 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-43.916727975063964      1.8s",
+   "R=   5.906 digits= 50.0 order=  67 steps= 29 shots= 16 eps=-43.916727975063964      2.1s"
+  ]
+ }
+}
