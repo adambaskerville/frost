@@ -22,11 +22,11 @@ Closed-shell 1s² RHF is a 1-D nonlinear eigenproblem, so no basis set is needed
 | | significant figures | wall time |
 |---|---|---|
 | Hatano & Yamamoto, J. Comput. Chem. Jpn. Int. Ed. 11 (2025) — previous record | 66 | |
-| certified upper bound, R = 109 | 124 | 11 s + 26 s |
-| oracle, two independent runs (R 177/185, order 358/261, step 0.25/0.15) | 204 (agreement) | ~1 min each |
-| certified upper bound, R = 185 | 204 | 1 min + 1.5 min |
+| certified upper bound, R = 109 | 124 | 12 s + 3 s |
+| oracle, two independent runs (R 177/185, order 261/374, step 0.15/0.25) | 204 (agreement) | 35 / 39 s |
+| certified upper bound, R = 177 | 204 | 35 s + 10 s |
 | oracle, two independent runs (R 432/445, order 626/856, step 0.15/0.25) | 503 (agreement) | 7.4 / 8.2 min |
-| certified upper bound, R = 432 | 503 (lies 1.7e−503 above the R = 445 run) | 7.4 min + 34 min |
+| certified upper bound, R = 432 | 503 (lies 1.7e−503 above the R = 445 run) | 7.4 min + 1.8 min |
 
     E_HF(He) = −2.861679995612238878775543740022563429412879776752447053906864697434188362627955696043994965
                3409977869098417516573190127023919647238612566769378991533811865805702964675400062623498834061443950
@@ -43,8 +43,8 @@ Certified digits ≈ 1.15 R: the Dirichlet wall is the only floor.
 | | significant figures | wall time |
 |---|---|---|
 | Hatano & Yamamoto (2025) — previous record | 43 | |
-| certified upper bound, 100-digit run (walls 40 / 158 bohr), vs independent 110-digit run | 103 | 170 s + 18 s |
-| certified upper bound, 200-digit run (walls 78 / 305 bohr), vs independent 210-digit run | 202 | 23 min + 1.5 min |
+| certified upper bound, 100-digit run (walls 40 / 158 bohr), vs independent 110-digit run | 103 | 175 s + 18 s |
+| certified upper bound, 200-digit run (walls 78 / 305 bohr), vs independent 210-digit run | 202 | 23 min + 1.4 min |
 | certified upper bound, 500-digit run (walls 190 / 744 bohr), vs independent 510-digit run | 501 (bound lies 7.1e−501 above it; wall law fitted on the 100-digit run predicts 7.0e−501) | 4.0 h + 13 min |
 
     E_HF(Be) = -14.5730231683163995824114473598700144538777213577740054138052227220687300019382263514550803169376936498
@@ -90,7 +90,7 @@ the Λ-basis record (66-figure energy) the He cusp ratio has 30 correct figures,
 
 ## Isoelectronic series, Z = 1–10
 
-Certified upper bounds (run at `--digits 100`, 10–16 s each), checked against an independent oracle run
+Certified upper bounds (run at `--digits 100`, 7–12 s each plus 2–3 s for the certificate), checked against an independent oracle run
 (`--digits 110 --step 0.25 --guard 30`, larger wall). Every bound lies above its reference. Full 100-digit
 values are in `he_like_series.txt`.
 
@@ -129,7 +129,7 @@ geometrically instead.
 ## Reproduce
 
     python oracle.py --digits 120 --out he120.json      # ~13 s
-    python certify.py he120.json                        # ~30 s
+    python certify.py he120.json                        # a few seconds
     for Z in $(seq 1 10); do
         python oracle.py --Z $Z --digits 100 --out z$Z.json && python certify.py z$Z.json
         python oracle.py --Z $Z --digits 110 --step 0.25 --guard 30 --out z${Z}ref.json
