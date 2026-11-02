@@ -1,4 +1,4 @@
-"""Rigorous upper bound on the closed-shell RHF energy of an atom with s orbitals, in exact rational arithmetic.
+"""Rigorous upper bound on the closed-shell RHF energy of an atom, in exact rational arithmetic.
 
 Reads the piecewise Taylor polynomials written by oracle.py (one orbital) or oracle_ns.py (several, each
 with its own wall) and turns them into admissible trial orbitals *exactly*: dyadic coefficients,
@@ -17,6 +17,8 @@ is rounded towards +infinity, so it is itself an upper bound. Shares no code wit
 """
 import argparse
 import json
+import multiprocessing
+from math import factorial
 
 from gmpy2 import lcm, log10, mpfr, mpq, mpz
 
@@ -119,44 +121,107 @@ def trial(data, order=None):
     return els, F, A
 
 
+def threej2(a, b, c):
+    """(a b c; 0 0 0)^2, exactly."""
+    J = a + b + c
+    if J % 2 or c > a + b or c < abs(a - b):
+        return mpq(0)
+    g = J // 2
+    return mpq(factorial(J - 2 * a) * factorial(J - 2 * b) * factorial(J - 2 * c), factorial(J + 1)) * mpq(
+        factorial(g), factorial(g - a) * factorial(g - b) * factorial(g - c)) ** 2
+
+
+def element(task):
+    """One element's exact contributions (run in a worker): its S, T, V and Q pieces, and for each needed
+    (q, p, k) the factor c1 that multiplies Q^k_p accumulated over earlier elements, plus its own inner part c2."""
+    (a, h, _), Fe, A, Z, l, lq, K, need, same = task
+    o = {"S": {}, "T": {}, "V": {}, "Q": {}, "C": {}}
+    al, et = mpz(a * 2 ** A), mpz(h * 2 ** A)  # r = (al + et s) / 2^A
+    U = [[mpz(1)]]
+    for _ in range(4 * max(l) + 2):
+        U.append(pmul(U[-1], [al, et]))  # U[m] = (al + et s)^m = (2^A r)^m
+    live = [q for q in lq if Fe[q[0]] and Fe[q[1]]]
+    rho = {q: pmul(Fe[q[0]], Fe[q[1]]) for q in live}
+    dP = [[(k + 1) * P[k + 1] for k in range(len(P) - 1)] for P in Fe]
+    g, W, Lw = {}, {}, {}
+    for q, p, k in need:
+        if q not in live:
+            continue
+        mq, mp = lq[q] + 1 - k, lq[p] + k + 2
+        if (q, mq) not in g:
+            g[(q, mq)] = pmul(rho[q], U[mq])
+        gq = g[(q, mq)]
+        c1, c2 = mpq(et, 2 ** ((mq + 1) * A)) * pint(gq), mpq(0)
+        if p in live:
+            if (p, mp) not in W:
+                w = pmul(rho[p], U[mp])
+                Lw[(p, mp)] = lcm_to(len(w))
+                W[(p, mp)] = [mpz(0)] + [c * (Lw[(p, mp)] // (j + 1)) for j, c in enumerate(w)]  # Lw * int_0^s w
+            c2 = mpq(et * et, 2 ** ((mq + mp + 2) * A) * Lw[(p, mp)]) * pint(pmul(gq, W[(p, mp)]))
+        o["C"][(q, p, k)] = c1, c2
+    for q in live:
+        if q in same:
+            m = 2 * l[q[0]] + 2
+            o["S"][q] = mpq(et, 2 ** ((m + 1) * A)) * pint(pmul(rho[q], U[m]))
+            o["T"][q] = pint(pmul(pmul(dP[q[0]], dP[q[1]]), U[m])) / (2 * et * 2 ** ((m - 1) * A))
+            o["V"][q] = -Z * mpq(et, 2 ** (m * A)) * pint(pmul(rho[q], U[m - 1]))
+        for k in K[q]:
+            m = lq[q] + k + 2
+            o["Q"][(q, k)] = mpq(et, 2 ** ((m + 1) * A)) * pint(pmul(rho[q], U[m]))
+    return o
+
+
 def certify(data, order=None):
-    """Exact E[f] (an mpq) for the trial orbitals of `data`. E is the closed-shell determinant's,
-        E = 2 sum_ij P_ij h_ij + sum_ijkl P_ij P_kl [2 (ij|kl) - (ik|jl)],   P = S^-1,
-    exact for the span of the orbitals whether or not they are orthonormal; one orbital gives
-    2 (T + V) / N + J / N^2."""
+    """Exact E[f] (an mpq) for the trial orbitals of `data`, R_i = r^l_i f_i. E is the closed-shell determinant's,
+        E = 2 sum_l (2l+1) sum_ij D_ij h_ij
+            + sum_ll' (2l+1)(2l'+1) sum_{ij in l, mo in l'} D_ij D_mo [2 R^0(ij, mo) - sum_k (l k l'; 000)^2 R^k(im, jo)],
+    D = S^-1 within each l, exact for the span of the orbitals whether or not they are orthonormal; one s orbital
+    gives 2 (T + V) / N + J / N^2. R^k(q, p) = int int P_q(r) P_p(s) r_<^k / r_>^(k+1) with P_q = r^(l_q+2) f_i f_j,
+    l_q = l_i + l_j: its integrand r^(l_q+1-k) f_i f_j(r) int_0^r s^(l_p+k+2) f_m f_o is a polynomial because the
+    triangle rule gives k <= l_q, so every term is an exact rational."""
     Z = int(data["Z"])
     els, F, A = trial(data, order)
     n = len(F[0])
+    l = data.get("l", [0] * n)
     pairs = [(i, j) for i in range(n) for j in range(i, n)]
-    S, T, V, Q = ({q: mpq(0) for q in pairs} for _ in range(4))
-    C = {(q, p): mpq(0) for q in pairs for p in pairs}  # int rho_q r Q_p, Q_p(r) = int_0^r rho_p s^2
-    for (a, h, _), Fe in zip(els, F):
-        al, et = mpz(a * 2 ** A), mpz(h * 2 ** A)  # r = (al + et s) / 2^A
-        u1, u2 = [al, et], [al * al, 2 * al * et, et * et]
-        live = [q for q in pairs if Fe[q[0]] and Fe[q[1]]]
-        rho = {q: pmul(Fe[q[0]], Fe[q[1]]) for q in live}
-        w, g = {q: pmul(rho[q], u2) for q in live}, {q: pmul(rho[q], u1) for q in live}
-        dP = [[(k + 1) * P[k + 1] for k in range(len(P) - 1)] for P in Fe]
-        Lw = {q: lcm_to(len(w[q])) for q in live}
-        W = {q: [mpz(0)] + [c * (Lw[q] // (k + 1)) for k, c in enumerate(w[q])] for q in live}  # Lw * int_0^s w
-        gi = {q: pint(g[q]) for q in live}
-        for q in live:
-            for p in pairs:
-                C[(q, p)] += mpq(et, 2 ** (2 * A)) * Q[p] * gi[q]
-                if p in live:
-                    C[(q, p)] += mpq(et * et, 2 ** (5 * A) * Lw[p]) * pint(pmul(g[q], W[p]))
-            T[q] += pint(pmul(pmul(dP[q[0]], dP[q[1]]), u2)) / (2 * et * 2 ** A)
-            V[q] -= Z * mpq(et, 2 ** (2 * A)) * gi[q]
-        for q in live:
-            dn = mpq(et, 2 ** (3 * A)) * pint(w[q])
-            S[q] += dn
-            Q[q] += dn
+    lq = {q: l[q[0]] + l[q[1]] for q in pairs}
+    K = {q: range(abs(l[q[0]] - l[q[1]]), lq[q] + 1, 2) for q in pairs}
+    same = [q for q in pairs if l[q[0]] == l[q[1]]]
+    ltype = lambda q: sorted((l[q[0]], l[q[1]]))  # noqa: E731
+    need = sorted({(q, p, 0) for q in same for p in same}
+                  | {(q, p, k) for q in pairs for p in pairs if ltype(q) == ltype(p) for k in K[q]})
+    S, T, V = ({q: mpq(0) for q in same} for _ in range(3))
+    Q = {(p, k): mpq(0) for p in pairs for k in K[p]}  # int_0^r s^(l_p+k+2) rho_p ds
+    C = {x: mpq(0) for x in need}  # int rho_q r^(l_q+1-k) Q^k_p
+    # elements in parallel; only Q (int_0^r) runs across elements, so C is completed by a prefix sum afterwards
+    with multiprocessing.get_context("spawn").Pool() as pool:
+        parts = pool.map(element, [(e, Fe, A, Z, l, lq, K, need, same) for e, Fe in zip(els, F)])
+    for o in parts:
+        for x, (c1, c2) in o["C"].items():
+            C[x] += c1 * Q[(x[1], x[2])] + c2
+        for acc, d in ((S, o["S"]), (T, o["T"]), (V, o["V"]), (Q, o["Q"])):
+            for y, v in d.items():
+                acc[y] += v
     key = lambda i, j: (min(i, j), max(i, j))  # noqa: E731
-    G = lambda q, p: C[(q, p)] + C[(p, q)]  # noqa: E731  (q|p)
-    P = inverse([[S[key(i, j)] for j in range(n)] for i in range(n)])
-    ij = [(i, j) for i in range(n) for j in range(n)]
-    return sum(2 * P[i][j] * (T[key(i, j)] + V[key(i, j)]) for i, j in ij) + sum(
-        P[i][j] * P[k][l] * (2 * G(key(i, j), key(k, l)) - G(key(i, k), key(j, l))) for i, j in ij for k, l in ij)
+    G = lambda q, p, k: C[(q, p, k)] + C[(p, q, k)]  # noqa: E731  R^k(q, p)
+    blocks = {}
+    for i, li in enumerate(l):
+        blocks.setdefault(li, []).append(i)
+    D = {}
+    for li, idx in blocks.items():
+        inv = inverse([[S[key(i, j)] for j in idx] for i in idx])
+        D.update({(i, j): inv[x][y] for x, i in enumerate(idx) for y, j in enumerate(idx)})
+    E = sum(2 * (2 * li + 1) * D[(i, j)] * (T[key(i, j)] + V[key(i, j)]) for li, I in blocks.items() for i in I for j in I)
+    for li, I in blocks.items():
+        for lj, M in blocks.items():
+            for i in I:
+                for j in I:
+                    for m in M:
+                        for o in M:
+                            x = 2 * G(key(i, j), key(m, o), 0) - sum(
+                                threej2(li, k, lj) * G(key(i, m), key(j, o), k) for k in K[key(i, m)])
+                            E += (2 * li + 1) * (2 * lj + 1) * D[(i, j)] * D[(m, o)] * x
+    return E
 
 
 def decimal_up(q, n):

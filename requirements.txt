@@ -1,0 +1,4 @@
+# Versions that produced the published runs (gmpy2 built against MPFR 4.2.1 and GMP 6.3.0).
+gmpy2==2.1.5
+# Only for paper/make_paper.py and paper2/make_paper2.py.
+matplotlib==3.10.8

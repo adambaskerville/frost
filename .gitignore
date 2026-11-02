@@ -9,3 +9,14 @@ paper/*.log
 paper/*.out
 paper/*.synctex.gz
 paper/*Notes.bib
+taylor.so
+taylor.so.*
+paper2/*.aux
+paper2/*.bbl
+paper2/*.blg
+paper2/*.fdb_latexmk
+paper2/*.fls
+paper2/*.log
+paper2/*.out
+paper2/*.synctex.gz
+paper2/*Notes.bib

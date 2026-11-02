@@ -1,6 +1,7 @@
-"""End-to-end check (~50 s): oracle runs reproduce reference HF energies and orbital properties, and their exact-rational
+"""End-to-end check (~25 s on a multi-core laptop): oracle runs reproduce reference HF energies and orbital properties, and their exact-rational
 certificates are valid (above the reference) and tight upper bounds."""
-from gmpy2 import mpq
+import gmpy2
+from gmpy2 import mpfr, mpq
 
 import oracle_ns
 from certify import certify
@@ -30,12 +31,25 @@ E_BE = mpq("-14.5730231683163995824114473598700144538777")
 
 
 def test_beryllium_20_digits():
-    """Two orbitals with separate walls, canonical (lambda = 0) shooting, non-orthogonal certificate."""
-    data = oracle_ns.solve(20, Z=4, n=2, log=lambda *_: None)
+    """Two s orbitals: multiple shooting with one wall, certificate with D = S^-1."""
+    data = oracle_ns.solve(20, Z=4, orbitals="1s 2s", log=lambda *_: None)
     tol = abs(E_BE) / 10**19
     assert abs(mpq(data["E"]) - E_BE) < tol, data["E"]
     E = certify(data)
     assert E_BE < E < E_BE + tol, float(E - E_BE)
+
+
+# Cinal, J. Math. Chem. 58, 1571 (2020), as quoted in arXiv:2309.10704 (14 s.f.)
+E_NE = mpq("-128.54709810938")
+
+
+def test_neon_15_digits():
+    """p shell: multipole potentials (k = 0, 1, 2), 3j-weighted exchange, the 1s/2s tails induced by the 2p
+    (one common wall), and the certificate's F^k/G^k energy."""
+    data = oracle_ns.solve(15, Z=10, orbitals="1s 2s 2p", log=lambda *_: None)
+    assert abs(mpq(data["E"]) - E_NE) < abs(E_NE) / 10**13, data["E"]
+    E = certify(data)
+    assert abs(E - mpq(data["E"])) < abs(E) / 10**22, float(E - mpq(data["E"]))  # bound = solver energy
 
 
 def test_he_properties_30_digits():
@@ -49,8 +63,34 @@ def test_he_properties_30_digits():
         assert abs(mpq(got) / mpq(ref) - 1) < mpq(1, 10**29), (got, ref)
 
 
+def test_c_kernel_matches_python():
+    """taylor.c against oracle_ns.sweep (d shell, Frobenius start and off-origin, energy and elements): the same
+    recurrences, but C forms each Cauchy product exactly and rounds once, so they agree to the Python sweep's own
+    rounding error (k roundings per product), far below 2^-(bits - 40)."""
+    assert oracle_ns._K, "taylor.c did not build"
+    bits = 300
+    gmpy2.get_context().precision = bits
+    sy = oracle_ns.system(30, "1s 2s 2p 3s 3p 3d 4s")
+    eps = [-mpfr(30) ** 2 / (3 * nn ** 2) for nn, _ in sy.nl]
+    flat = lambda st: ([v for fa in st["f"] for v in fa] + [v for p in st["y"].values() for v in p]  # noqa: E731
+                       + [v for k in "TVMJ" for v in st[k].values()])
+    for r0, r1 in [(mpfr(0), mpfr("0.375")), (mpfr("0.5"), mpfr("0.8125"))]:
+        st = {"f": [oracle_ns.hydrogenic(30, nn, ll, r0) for nn, ll in sy.nl],
+              "y": {pk: (mpfr(1) / (3 + i), -mpfr(1) / (7 + i)) for i, pk in enumerate(sy.pots)}}
+        a, hs, el = oracle_ns.sweep(st, r0, r1, eps, sy, 24, mpfr("0.15"), mpfr("0.7"), None, True)
+        b, hc, ec = oracle_ns.csweep(st, r0, r1, eps, sy, 24, mpfr("0.15"), mpfr("0.7"), hs, "elements")
+        tol = mpfr(2) ** (40 - bits)
+        assert max(abs(u - v) / abs(v) for u, v in zip(flat(b), flat(a)) if v) < tol, float(r0)
+        for (_, h, fc), (_, _, fp, _) in zip(ec, el):  # series coefficients by what they contribute, |du_k| h^k
+            for x, y in zip(fc, fp):
+                assert max(abs(u - v) * h ** k for k, (u, v) in enumerate(zip(x, y))) <= tol * max(
+                    abs(v) * h ** k for k, v in enumerate(y)), float(r0)
+
+
 if __name__ == "__main__":
+    test_c_kernel_matches_python()
     test_isoelectronic_25_digits()
     test_beryllium_20_digits()
+    test_neon_15_digits()
     test_he_properties_30_digits()
     print("ok")

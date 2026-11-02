@@ -1,7 +1,12 @@
 # FROST: Hartree–Fock limits to hundreds of digits
 
-Fock Radial Orbital Shooting with Taylor series. Requires Python 3 and `gmpy2` (`pip install gmpy2`);
-`paper/make_paper.py` also needs `matplotlib`.
+Fock Radial Orbital Shooting with Taylor series. Requires Python 3 and `gmpy2` (`pip install -r requirements.txt`
+installs the tested versions; the paper scripts also need `matplotlib`). `oracle_ns.py` compiles its C kernel
+`taylor.c` on first use against the MPFR and GMP headers and libraries under the Python prefix (a conda environment
+with `mpfr` and `gmp` provides them); without them it falls back to the much slower pure-Python integration.
+
+Paper I (He and Be, release v1.0) is in `paper/` and paper II (the closed-shell atoms from Ne to Xe, release v2.0)
+in `paper2/`. The orbital files of every run in both papers are archived on Zenodo (DOIs to be added).
 
 Closed-shell 1s² RHF is a 1-D nonlinear eigenproblem, so no basis set is needed:
 
@@ -10,12 +15,14 @@ Closed-shell 1s² RHF is a 1-D nonlinear eigenproblem, so no basis set is needed
 | file | what |
 |---|---|
 | `oracle.py` | Taylor-series shooting. Frobenius series at r = 0, then steps sized from each series' own radius of convergence; nested secant solves for ε − V_H(0) (f(R) = 0) and f(0) (normalisation), with continuation in the wall radius R. Order, wall and precision are independent knobs. |
-| `oracle_ns.py` | The same method for closed-shell atoms with n doubly occupied s orbitals (n = 2: Be-like 1s²2s²). Pair potentials Y_ij for every Coulomb and exchange term, one wall per orbital, nested scalar shooting innermost orbital first, homotopy from hydrogenic orbitals. n = 1 reproduces `oracle.py`. |
-| `certify.py` | Independent exact-rational evaluation of the RHF energy functional for the oracle's orbitals (dyadic coefficients; continuity and f_i(R_i) = 0 imposed exactly; for several orbitals the determinant energy with P = S⁻¹, exact for their span whether or not they are orthonormal). The variational principle gives E_HF ≤ E[f] with no rounding anywhere. |
+| `oracle_ns.py` | The same method for any closed-shell atom (`--orbitals "1s 2s 2p"`). With f = P/r^(l+1) and y^k = Y^k/r^(k+1) every equation reads r u'' + 2(L+1) u' = g. One common wall, multiple shooting over segments of bounded growth (chord Newton, sparse LU), homotopy in the electron–electron coupling from hydrogenic orbitals, then continuation in the wall. Paper I's Be runs used the earlier version in release v1.0 (one wall per orbital, nested scalar shooting). |
+| `taylor.c` | C kernel of `oracle_ns.py` (MPFR): the Taylor integration of a segment, with exact dot products, and the sparse LU. Built automatically; the test checks it against the Python integration. |
+| `certify.py` | Independent exact-rational evaluation of the RHF energy functional for the oracle's orbitals (dyadic coefficients; continuity and f_i(R_i) = 0 imposed exactly; for several orbitals the determinant energy with P = S⁻¹, exact for their span whether or not they are orthonormal). For p and d shells the exchange multipoles k ≥ 1 enter through Slater integrals with exact 3j symbols; writing P = r^(l+1) f keeps every integrand polynomial. The variational principle gives E_HF ≤ E[f] with no rounding anywhere. |
 | `properties.py` | Exact cusp ratio f'(0)/f(0), ρ(0) and ⟨rᵏ⟩ of the certified trial orbitals (exact rational integration). |
-| `test_hf_taylor.py` | 50 s end-to-end check (H⁻, He, Ne⁸⁺ with `oracle.py`; Be with `oracle_ns.py`; He properties vs Hatano & Yamamoto). |
+| `test_hf_taylor.py` | End-to-end check, about 11 s on 12 cores (H⁻, He, Ne⁸⁺ with `oracle.py`; Be and Ne with `oracle_ns.py`; He properties vs Hatano & Yamamoto; the C kernel against the Python integration). |
 | `he_like_series.txt` | Certified energies, Z = 1–10, to 100 significant figures. |
-| `paper/` | Preprint (`hf_taylor.tex`); `make_paper.py` generates its numbers, tables and figures. |
+| `paper/` | Paper I (`hf_taylor.tex`); `make_paper.py` generates its numbers, tables and figures. |
+| `paper2/` | Paper II (`frost_pd.tex`); `run_all.sh` makes every run, `make_paper2.py` its numbers, tables and figure. `data/runs/` holds each run's certificate output, logs and orbital-file checksums. |
 
 ## Results: He (Apple M4 Pro, one core, Python + gmpy2)
 
@@ -38,7 +45,7 @@ Closed-shell 1s² RHF is a 1-D nonlinear eigenproblem, so no basis set is needed
 All 66 digits of Hatano & Yamamoto agree; the digits they print beyond 66 do not.
 Certified digits ≈ 1.15 R: the Dirichlet wall is the only floor.
 
-## Beryllium (1s²2s²), `oracle_ns.py`
+## Beryllium (1s²2s²), paper I
 
 | | significant figures | wall time |
 |---|---|---|
@@ -54,7 +61,9 @@ Certified digits ≈ 1.15 R: the Dirichlet wall is the only floor.
                    179338392625576822389455941180416448874596914581406525412122256259765032056688952590379295553928939   (501 s.f.)
 
 All 43 figures of Hatano & Yamamoto agree. Each bound lies above its independent run (larger walls,
-c = 0.25, guard 30); the difference is the wall error of the certified run. What two orbitals change:
+c = 0.25, guard 30); the difference is the wall error of the certified run. Paper I's solver (release v1.0) handled the two orbitals
+as below; the current `oracle_ns.py` replaces the first three points with one common wall and multiple shooting
+(paper II):
 
 - **One wall per orbital.** Integrated out to the 2s wall, the 1s growing mode exp(3.1 r) would need ~4x
   the working precision. The 1s gets its own wall at the same exp(-2κR); its space H¹₀(0, R₁) is still
@@ -67,6 +76,29 @@ c = 0.25, guard 30); the difference is the wall error of the certified run. What
 - **Nested scalar solves, innermost orbital first.** Every trial 2s energy re-solves the 1s energy, so no
   growing 1s mode reaches the 2s equation through exchange (a joint solve finds spurious roots).
 - **Start.** Homotopy in the electron-electron coupling from exact hydrogenic orbitals.
+
+## Paper II: closed-shell atoms from neon to xenon
+
+Occupied p and d shells bring exchange multipoles with k ≥ 1, whose induced tails give every inner canonical
+orbital the decay of the outermost one (Handy, Marron & Silverstone 1969), so all orbitals share one wall.
+Multiple shooting over segments of bounded growth keeps the stiff inner orbitals under control. Run A is
+certified; run B is independent (10 more digits, c = 0.25, guard 30). Times are on the 12 cores of an Apple M4 Pro.
+
+| atom | Z | digits | A–B agreement (s.f.) | certified (s.f.) | previous record (s.f.) | run A / run B / certificate |
+|---|---|---|---|---|---|---|
+| Ne | 10 | 500 | 504.6 | 504.6 | 30 (Yamamoto & Hatano 2026) | 26 min / 41 min / 17 min |
+| Mg | 12 | 100 | 103.7 | 103.7 | 30 (Yamamoto & Hatano 2026) | 86 s / 4 min / 3 min |
+| Ar | 18 | 100 | 105.4 | 105.4 | 30 (Yamamoto & Hatano 2026) | 13 min / 9 min / 6 min |
+| Ca | 20 | 100 | 103.5 | 103.5 | 25 (Cinal 2020) | 7 min / 15 min / 11 min |
+| Zn | 30 | 100 | 105.0 | 105.0 | 25 (Cinal 2020) | 24 min / 51 min / 16 min |
+| Kr | 36 | 100 | 105.8 | 105.8 | 25 (Cinal 2020) | 37 min / 43 min / 25 min |
+| Sr | 38 | 100 | 103.9 | 103.9 | 25 (Cinal 2020) | 1.8 h / 1.5 h / 71 min |
+| Pd | 46 | 100 | 106.5 | 106.6 | 25 (Cinal 2020) | 1.9 h / 1.6 h / 54 min |
+| Cd | 48 | 100 | 105.2 | 105.2 | 25 (Cinal 2020) | 1.6 h / 2.1 h / 1.6 h |
+| Xe | 54 | 100 | 105.9 | 105.9 | 25 (Cinal 2020) | 3.9 h / 3.2 h / 2.1 h |
+
+Every certified figure, the orbital energies and the exchange-induced nodes of the inner orbitals are in
+`paper2/frost_pd.pdf` and `paper2/data/runs.json`.
 
 ## Orbital quality (`properties.py`)
 
@@ -129,13 +161,15 @@ geometrically instead.
 ## Reproduce
 
     python oracle.py --digits 120 --out he120.json      # ~13 s
-    python certify.py he120.json                        # ~30 s
+    python certify.py he120.json                        # a few seconds
     for Z in $(seq 1 10); do
         python oracle.py --Z $Z --digits 100 --out z$Z.json && python certify.py z$Z.json
         python oracle.py --Z $Z --digits 110 --step 0.25 --guard 30 --out z${Z}ref.json
     done
-    python oracle_ns.py --Z 4 --digits 100 --out be100.json && python certify.py be100.json   # ~3 min
+    python oracle_ns.py --Z 4 --digits 100 --out be100.json && python certify.py be100.json   # ~10 s
     python oracle_ns.py --Z 4 --digits 110 --step 0.25 --guard 30 --out be100ref.json
+    python oracle_ns.py --Z 10 --orbitals "1s 2s 2p" --digits 100 --out ne100.json && python certify.py ne100.json   # ~35 s
+    paper2/run_all.sh OUT && python paper2/make_paper2.py --extract OUT   # every run of paper II, about 30 h
     python test_hf_taylor.py
 
 ## License
