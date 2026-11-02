@@ -65,7 +65,7 @@ We therefore abandon the basis set and return to Hartree's starting point, the r
 \item The method extends to several $s$ orbitals (Sec.~\ref{sec:be}) with one wall per orbital, canonical orbitals certified by a determinant energy that does not assume orthogonality, and nested shooting from the innermost orbital outward. Beryllium is certified to \BeNsf\ significant figures, against 43 before (Table~\ref{tab:behist}).
 \item The orbitals are as accurate as the energies (Sec.~\ref{sec:orbitals}). The nuclear cusp is exact, the pointwise error follows a closed form in Whittaker functions, and $\langle r^k\rangle$ loses only about two figures per power of $r$.
 \end{enumerate}
-Results for helium, the isoelectronic series from H$^-$ to Ne$^{8+}$, and the correlation energy of helium are in Sec.~\ref{sec:results}, beryllium is in Sec.~\ref{sec:be}, and orbital properties are in Sec.~\ref{sec:orbitals}. The code is a few hundred lines of Python requiring only 10 seconds on a single laptop core (Apple M4 Pro) to produce 120 digits of accuracy~\cite{code}.
+Results for helium, the isoelectronic series from H$^-$ to Ne$^{8+}$, and the correlation energy of helium are in Sec.~\ref{sec:results}, beryllium is in Sec.~\ref{sec:be}, and orbital properties are in Sec.~\ref{sec:orbitals}. The code is a few hundred lines of Python requiring only \secRunA~seconds on a single laptop core (Apple M4 Pro) to produce 120 digits of accuracy~\cite{code}.
 
 %=====================================================================================
 \section{Formulation}\label{sec:formulation}
@@ -157,7 +157,7 @@ The shooting energy is accurate but not rigorous, being affected by rounding, se
 \item It evaluates $N$, $T$, $V$ and $J$ of Eq.~\eqref{eq:integrals} exactly. On each element every integrand is an integer polynomial in $s$, integrated over $[0,1]$ with the common denominator $\mathrm{lcm}(1,\dots,n)$. The inner integral $Q(r)$ is accumulated across elements as an exact polynomial antiderivative.
 \item It forms $E[f]$ as a rational number and prints it rounded towards $+\infty$.
 \end{enumerate}
-The variational principle then gives $\EHF\le E_R\le E[f]$ with no arithmetic error. Any piecewise polynomial would produce a valid bound; the solver only makes the bound tight. The cost is dominated by products of integer polynomials of degree $2p$ with coefficients of a few thousand bits: \certRunA~s at 120 digits and 34~min at 500. The current version computes these products by Kronecker substitution~\cite{vzGathen2013}: each polynomial is packed into one integer, so that GMP performs a single multiplication. It returns identical rationals 4--5 times faster at 100--200 digits; the helium timings quoted here predate it. Sec.~\ref{sec:be} extends the certificate to several orbitals.
+The variational principle then gives $\EHF\le E_R\le E[f]$ with no arithmetic error. Any piecewise polynomial would produce a valid bound; the solver only makes the bound tight. The cost is dominated by products of integer polynomials of degree $2p$ with coefficients of a few thousand bits, which the certificate computes by Kronecker substitution~\cite{vzGathen2013}: each polynomial is packed into one integer, so that GMP performs a single multiplication, and the helium certificate takes \certRunA~s at 120 digits and \certMinA~min at 500. Sec.~\ref{sec:be} extends the certificate to several orbitals.
 
 %=====================================================================================
 \section{Analytic structure of the orbital}\label{sec:analytic}
@@ -235,7 +235,7 @@ $Z$ & ion & $\EHF$ & $\varepsilon$ & $R$ & agree \\
 \end{ruledtabular}
 \end{table*}
 
-Only $Z$ changes along the series. Table~\ref{tab:series} lists certified 100-digit results for $Z=1$--10, each taking 10--16~s plus a certificate of similar cost. Every exact bound lies above its independent reference and agrees with it to 103--108 significant figures. Because $\kappa$ grows with $Z$, the wall needed for 100 digits shrinks from 409~bohr for H$^-$ to 13~bohr for Ne$^{8+}$.
+Only $Z$ changes along the series. Table~\ref{tab:series} lists certified 100-digit results for $Z=1$--10, each taking 7--12~s plus 2--3~s for its certificate. Every exact bound lies above its independent reference and agrees with it to 103--108 significant figures. Because $\kappa$ grows with $Z$, the wall needed for 100 digits shrinks from 409~bohr for H$^-$ to 13~bohr for Ne$^{8+}$.
 
 \subsection{H$^-$}\label{sec:hminus}
 
@@ -257,8 +257,8 @@ correct to \Ncorr\ significant figures. Its accuracy is now set entirely by the 
 
 All runs used Python with \texttt{gmpy2} (MPFR and GMP) on one core of an Apple M4 Pro.
 \begin{itemize}
-\item \textbf{Solver.} Each integration costs $O(p^2)$ multiplications per step at $d$-digit precision, with $p\propto d$ and $O(\log R)$ steps. There are $O(\log R)$ continuation stages of about 20 integrations each. The solver took 11~s at 120 digits and 7.4~min at 500, scaling as about $D^{2.6}$ over that range.
-\item \textbf{Certificate.} It works with integers of up to a few thousand bits and scales as about $D^{3.4}$: 16~s at 120 digits and 34~min at 500.
+\item \textbf{Solver.} Each integration costs $O(p^2)$ multiplications per step at $d$-digit precision, with $p\propto d$ and $O(\log R)$ steps. There are $O(\log R)$ continuation stages of about 20 integrations each. The solver took \secRunA~s at 120 digits and \minA~min at 500, scaling as about $D^{2.6}$ over that range.
+\item \textbf{Certificate.} It works with integers of up to a few thousand bits and scales as about $D^{2.4}$: \certRunA~s at 120 digits and \certMinA~min at 500.
 \item \textbf{Memory.} The 500-digit orbital file, which holds every Taylor coefficient, is 18~MB so the memory footprint is very low.
 \end{itemize}
 
@@ -392,12 +392,12 @@ Both beryllium cusp ratios are exactly $-4$, against 19 correct figures in Ref.~
 
 For closed-shell atoms whose occupied orbitals are all $s$ orbitals, the HF problem is one-dimensional, and it can be solved to essentially any precision in time polynomial in the number of digits. This needs no basis set, no two-electron integrals and no extrapolation. The only approximation is the wall, whose error decays exponentially and follows a law (Eq.~\eqref{eq:wall}) that is verified independently. The solver and the certificate play separate roles. The solver is free to use any arithmetic or heuristic, because the certificate turns its output into a bound that depends on nothing but exact integer arithmetic and the variational principle. The same construction applies whenever an energy functional is an integral of polynomials in the trial function: a piecewise polynomial with dyadic coefficients always admits an exact evaluation.
 
-Beryllium shows that the method is not specific to two electrons. Each pair of occupied orbitals adds a Poisson equation and each orbital adds a shooting parameter. The problems this creates, an inner orbital's growing mode and the coupling through exchange, were solved by giving each orbital its own wall, by solving from the innermost orbital outward, and by a certificate that does not need orthogonality. For $p$ and $d$ shells, exchange brings multipoles $r_<^k/r_>^{k+1}$ with $k\ge1$. Their integrals over a polynomial element produce logarithms of knot ratios, so the certificate would need rigorous interval enclosures of those logarithms instead of exact rationals; the solver is unchanged. Open shells such as lithium need the restricted open-shell energy expression. The Be-like ions follow from Sec.~\ref{sec:be} by changing $Z$.
+Beryllium shows that the method is not specific to two electrons. Each pair of occupied orbitals adds a Poisson equation and each orbital adds a shooting parameter. The problems this creates, an inner orbital's growing mode and the coupling through exchange, were solved by giving each orbital its own wall, by solving from the innermost orbital outward, and by a certificate that does not need orthogonality. For $p$ and $d$ shells, exchange brings multipoles $r_<^k/r_>^{k+1}$ with $k\ge1$, and the solver needs one pair potential per multipole. The certificate remains exact if each radial function is written as $P=r^{l+1}f$ with $f$ piecewise polynomial: because $k\le l_a+l_b$, the factor $r^{-k-1}$ cancels and every integrand is again a polynomial. Open shells such as lithium need the restricted open-shell energy expression. The Be-like ions follow from Sec.~\ref{sec:be} by changing $Z$.
 
 The main limitation is that the bound is one-sided. The distance to $\EHF$ is established by an independent run and by the measured wall law, not by a rigorous lower bound. Producing a certified lower bound for a nonlinear eigenproblem at this precision remains open.
 
 \section*{Data and code availability}
-The solvers (\texttt{oracle.py} for one orbital, \texttt{oracle\_ns.py} for several), the certificate (\texttt{certify.py}), orbital properties (\texttt{properties.py}), a test, the 100-digit isoelectronic values and the script generating every table and figure of this paper are in Ref.~\cite{code}.
+The solvers (\texttt{oracle.py} for one orbital, \texttt{oracle\_ns.py} for several), the certificate (\texttt{certify.py}), orbital properties (\texttt{properties.py}), a test, the 100-digit isoelectronic values and the script generating every table and figure of this paper are in Ref.~\cite{code}, whose release v1.0 reproduces every run reported here digit for digit. The orbital files of those runs, with their certificate outputs and logs, are archived in Ref.~\cite{data}.
 
 % \begin{acknowledgments}
 % TODO: acknowledgments (and any disclosure of AI assistance required by the venue).
@@ -430,6 +430,7 @@ The certified bound for helium from run B, truncated to its \Nsf\ correct signif
 \bibitem{FroeseFischer1977} C. Froese Fischer, \textit{The Hartree--Fock Method for Atoms: A Numerical Approach} (Wiley, New York, 1977).
 \bibitem{Roothaan1960} C. C. J. Roothaan, L. M. Sachs, and A. W. Weiss, Rev. Mod. Phys. \textbf{32}, 186 (1960).
 \bibitem{Clementi1974} E. Clementi and C. Roetti, At. Data Nucl. Data Tables \textbf{14}, 177 (1974).
+\bibitem{Hatano2025} Y. Hatano and S. Yamamoto, J. Comput. Chem. Jpn. Int. Ed. \textbf{11}, 2024-0032 (2025).
 \bibitem{Gazquez1977} J. L. G\'azquez and H. J. Silverstone, J. Chem. Phys. \textbf{67}, 1887 (1977).
 \bibitem{Szalewicz1981} K. Szalewicz and H. J. Monkhorst, J. Chem. Phys. \textbf{75}, 5785 (1981).
 \bibitem{Koga1995} T. Koga, S. Watanabe, K. Kanayama, R. Yasuda, and A. J. Thakkar, J. Chem. Phys. \textbf{103}, 3000 (1995).
@@ -439,20 +440,20 @@ The certified bound for helium from run B, truncated to its \Nsf\ correct signif
 \bibitem{Lehtola2019} S. Lehtola, Int. J. Quantum Chem. \textbf{119}, e25945 (2019).
 \bibitem{Cinal2020} M. Cinal, J. Math. Chem. \textbf{58}, 1571 (2020).
 \bibitem{Hatano2020} Y. Hatano and S. Yamamoto, J. Phys. Commun. \textbf{4}, 085006 (2020).
-\bibitem{Hatano2022} Y. Hatano and S. Yamamoto, Mol. Phys. \textbf{120}, e2027534 (2022).
-\bibitem{Hatano2025} Y. Hatano and S. Yamamoto, J. Comput. Chem. Jpn. Int. Ed. \textbf{11}, 2024-0032 (2025).
-\bibitem{vzGathen2013} J. von zur Gathen and J. Gerhard, \textit{Modern Computer Algebra}, 3rd ed. (Cambridge University Press, Cambridge, 2013).
 \bibitem{MPFR} L. Fousse, G. Hanrot, V. Lef\`evre, P. P\'elissier, and P. Zimmermann, ACM Trans. Math. Softw. \textbf{33}, 13 (2007).
 \bibitem{Corliss1982} G. Corliss and Y. F. Chang, ACM Trans. Math. Softw. \textbf{8}, 114 (1982).
 \bibitem{Jorba2005} \`A. Jorba and M. Zou, Exp. Math. \textbf{14}, 99 (2005).
 \bibitem{Moore1966} R. E. Moore, \textit{Interval Analysis} (Prentice-Hall, Englewood Cliffs, NJ, 1966).
 \bibitem{Kato1957} T. Kato, Commun. Pure Appl. Math. \textbf{10}, 151 (1957).
 \bibitem{Janes2011} P. P. Janes and A. P. Rendell, J. Chem. Theory Comput. \textbf{7}, 1631 (2011).
-\bibitem{code} A. L. Baskerville, \texttt{frost}: \url{https://github.com/adambaskerville/frost}.
+\bibitem{code} A. L. Baskerville, \texttt{frost}, release v1.0: \url{https://github.com/adambaskerville/frost}.
 \bibitem{LiebSimon1977} E. H. Lieb and B. Simon, Commun. Math. Phys. \textbf{53}, 185 (1977).
+\bibitem{vzGathen2013} J. von zur Gathen and J. Gerhard, \textit{Modern Computer Algebra}, 3rd ed. (Cambridge University Press, Cambridge, 2013).
 \bibitem{Szego1975} G. Szeg\H{o}, \textit{Orthogonal Polynomials}, 4th ed. (American Mathematical Society, Providence, RI, 1975).
-\bibitem{FLAKE} A. L. Baskerville, ChemRxiv (2026), doi:10.26434/chemrxiv.15010182.
+\bibitem{FLAKE} A. L. Baskerville, ChemRxiv (2026), doi:10.26434/chemrxiv.15010182/v3.
+\bibitem{Hatano2022} Y. Hatano and S. Yamamoto, Mol. Phys. \textbf{120}, e2027534 (2022).
 \bibitem{DLMF} F. W. J. Olver \textit{et al.}, eds., \textit{NIST Digital Library of Mathematical Functions}, Chap.~13, \url{https://dlmf.nist.gov/13}.
+\bibitem{data} A. L. Baskerville, FROST I orbitals and certificates, Zenodo, doi:\textbf{https://doi.org/10.5281/zenodo.23884695}.
 \end{thebibliography}
 
 \end{document}

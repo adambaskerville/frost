@@ -344,6 +344,7 @@ macros = {
     "stepsB": str(HE["b"]["steps"]),
     "minA": f"{HE['a']['seconds'] / 60:.1f}",
     "minB": f"{HE['b']['seconds'] / 60:.1f}",
+    "certMinA": HE["cert"]["minutes"],
     "BeNsf": str(bnd),
     "BeD": str(BD),
     "BeEabs": rf"{grouped(EBe, 45, 3).replace('$-$', '-')}\ldots",
