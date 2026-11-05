@@ -20,3 +20,5 @@ paper2/*.log
 paper2/*.out
 paper2/*.synctex.gz
 paper2/*Notes.bib
+fast/hfatom
+fast/libhfatom.dylib
